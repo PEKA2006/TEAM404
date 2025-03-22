@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Search</title>
+    <style>
+        /* Global Styling */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #4caf50;
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        header button {
+            background: white;
+            color: #4caf50;
+            border: none;
+            border-radius: 20px;
+            padding: 0.7rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header button:hover {
+            background: #e8f5e9;
+        }
+
+        /* Container and Search Box */
+        .container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .search-box {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 10px 0 0 10px;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        .search-box button {
+            padding: 0.8rem 1.5rem;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .search-box button:hover {
+            background: #43a047;
+        }
+
+        /* Results Section */
+        .results {
+            margin-top: 1.5rem;
+        }
+        .patient-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .patient-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .patient-card div {
+            max-width: 70%;
+        }
+        .patient-card h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #333;
+        }
+        .patient-card p {
+            margin: 0.3rem 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        .patient-card button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .patient-card button:hover {
+            background: #43a047;
+        }
+
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            font-size: 1rem;
+            color: #666;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Doctor Search</h1>
+        <button onclick="logout()">Logout</button>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Enter patient name or ID">
+            <button onclick="searchPatient()">Search</button>
+        </div>
+        <div class="results" id="results">
+            <!-- Patient search results will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Mock Patient Data
+        const patients = [
+            { id: "P001", name: "John Doe", age: 45, condition: "Hypertension", lastVisit: "2025-03-15" },
+            { id: "P002", name: "Jane Smith", age: 32, condition: "Diabetes", lastVisit: "2025-03-12" },
+            { id: "P003", name: "Emily Davis", age: 50, condition: "Arthritis", lastVisit: "2025-02-20" },
+        ];
+
+        function logout() {
+            alert("Logged out successfully.");
+            window.location.href = "index.html";
+        }
+
+        function searchPatient() {
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            const filteredPatients = patients.filter(patient => 
+                patient.name.toLowerCase().includes(searchInput) || 
+                patient.id.toLowerCase().includes(searchInput)
+            );
+
+            if (filteredPatients.length === 0) {
+                resultsDiv.innerHTML = `<p class="no-results">No patients found. Please try again.</p>`;
+                return;
+            }
+
+            filteredPatients.forEach(patient => {
+                const patientCard = document.createElement("div");
+                patientCard.classList.add("patient-card");
+
+                patientCard.innerHTML = `
+                    <div>
+                        <h3>${patient.name}</h3>
+                        <p><strong>ID:</strong> ${patient.id}</p>
+                        <p><strong>Age:</strong> ${patient.age}</p>
+                        <p><strong>Condition:</strong> ${patient.condition}</p>
+                        <p><strong>Last Visit:</strong> ${patient.lastVisit}</p>
+                    </div>
+                    <button onclick="redirectToPatient('${patient.id}')">View Details</button>
+                `;
+
+                resultsDiv.appendChild(patientCard);
+            });
+        }
+
+        function redirectToPatient(patientId) {
+            alert(`Redirecting to details page for patient ID: ${patientId}`);
+            // Replace the following line with actual navigation logic (e.g., URL redirection)
+            window.location.href = `patient-details.html?id=${patientId}`;
+        }
+    </script>
+</body>
+</html>
